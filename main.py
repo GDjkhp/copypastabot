@@ -35,23 +35,30 @@ def newpost(msg, info):
     graph = facebook.GraphAPI(accesstoken)
     
     # Info
-    print(info)
+    print("\n", info)
     
     # To post text only
     graph.put_object(parent_object = 'me', connection_name = 'feed', message = msg)
     
     # Info
-    print("Submitted post successfully!\n")
+    print("Submitted post successfully")
+    
+    # Increment item if no errors
+    item+=1;
 
+# Main counter    
+item = 0;
 if __name__ == '__main__':
     # Reddit token + api stuff
     r = praw.Reddit("bot1", user_agent="shitshow")
     api = PushshiftAPI(r)
     
+    # TODO: Input date
+    
     # Submissions
     submissions = api.search_submissions(subreddit='copypasta', 
-        after= int(dt.datetime(2022, 3, 20).timestamp()), # (YYYY, MM, DD)
-        before=int(dt.datetime(2022, 3, 21).timestamp()), # (YYYY, MM, DD)
+        after= int(dt.datetime(2022, 3, 22).timestamp()), # (YYYY, MM, DD)
+        before=int(dt.datetime(2022, 3, 23).timestamp()), # (YYYY, MM, DD)
         limit=1000)
     gen1, gen2 = tee(submissions)
     
@@ -63,12 +70,31 @@ if __name__ == '__main__':
         count+=1
     print("\n")
     
-    # Post
+    # List
+    testlist = []
+    infolist = []
+    
+    # Confirm
+    ans = input("Start posting about among us? (y/n) \n>")
+    if 'n' in ans.lower():
+        exit()
+    else:
+        pass
+    
+    # Convert
+    count = 1
     for submission in gen1:
         test = str(submission.title) + " by " + str(submission.author) + " (" + str(submission.shortlink) + ")\n\n" + str(submission.selftext)
-        info = str(submission.title) + " by " + str(submission.author) + " (" + str(submission.shortlink) + ")"
-        newpost(test, info)
-        time.sleep(180) # the value was in seconds
+        info = str(count) + ". " + str(submission.title) + " by " + str(submission.author) + " (" + str(submission.shortlink) + ")"
+        testlist.append(test)
+        infolist.append(info)
+        count+=1
+        
+    # Post
+    while item < len(testlist):
+        newpost(testlist[item], infolist[item])
+        time.sleep(60) # the value was in seconds
+    
     
 #    for submission in gen2:
 #        print("submission:", submission)
